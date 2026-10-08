@@ -1,6 +1,11 @@
+from _pytest.raises import raises
 import pytest
 import pandas as pd
-from csic_climate.metrics import calculate_climate_summary, calculate_decadal_trend
+from csic_climate.metrics import (
+    calculate_climate_summary,
+    calculate_decadal_trend,
+    get_hottest_and_coldest_year,
+)
 
 
 @pytest.fixture
@@ -86,7 +91,7 @@ def test_get_hottest_and_coldest_year(sample_climate_data):
     assert "hottest_value" in result and "coldest_value" in result
 
 
-def test_get_hottest_and_coldest_year_filtered_range(multi_region_climate_data):
+def test_get_hottest_and_coldest_year_filtered_range(sample_climate_data):
     """
     Test 2: Comprueba el filtrado por rango de años y lista de comunidades.
 
@@ -101,7 +106,7 @@ def test_get_hottest_and_coldest_year_filtered_range(multi_region_climate_data):
     comunidades = ["Andalucía", "Madrid", "Cataluña", "Galicia"]
 
     result = get_hottest_and_coldest_year(
-        multi_region_climate_data,
+        sample_climate_data,
         start_year=start_year,
         end_year=end_year,
         comunidades=comunidades,
@@ -129,5 +134,5 @@ def test_get_hottest_and_coldest_year_empty():
             "temperatura_media_c",
         ]
     )
-    result = get_hottest_and_coldest_year(empty_df)
-    assert result is None or result.get("hottest_year") is None
+    with raises(ValueError):
+        get_hottest_and_coldest_year(empty_df)
